@@ -81,12 +81,10 @@ object Main extends App {
   import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion
 
   val mapper = new ObjectMapper
-  mapper.setVisibility(JsonMethod.ALL, Visibility.NONE)
-  mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY)
   mapper.setSerializationInclusion(Inclusion.NON_NULL)
   val m = mapper.writerWithDefaultPrettyPrinter
 
-  println(m.writeValueAsString(new JsonSchemaGenerator("", "").generateSchema(classOf[Obj])))
+  println(m.writeValueAsString(new JsonSchemaGenerator("", "").generateSchemaAsNode(classOf[Base])))
 }
 
 

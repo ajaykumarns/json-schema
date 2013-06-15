@@ -4,6 +4,10 @@ import org.codehaus.jackson.annotate._
 import javax.xml.bind.annotation.{XmlElements, XmlElement}
 import collection.mutable
 import java.lang.reflect.AnnotatedElement
+import org.codehaus.jackson.JsonNode
+import org.codehaus.jackson.map.ObjectMapper
+import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility
+import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion
 
 object DefaultSchemaHelper extends SchemaHelper
 
@@ -42,6 +46,9 @@ class JsonSchemaGenerator(
 ) {
   val simpleNumericTypes = Set("int", "Integer", "float", "Float", "long", "Long", "double", "Double")
 
+  def this(url: String, id: String) =
+    this(url, id, DefaultSchemaHelper, Nil, JsonObjectPostProcessors.all)
+
   private[this] def getSimpleType(clazz: Class[_]): JsonType = {
     //println("Simple type : " + clazz.getSimpleName)
     if (simpleNumericTypes contains clazz.getSimpleName) NumberType
@@ -52,6 +59,14 @@ class JsonSchemaGenerator(
     else null
   }
 
+  def generateSchemaAsNode(clazz: Class[_]*): JsonNode = {
+    val schema = generateSchema(clazz :_*)
+    val mapper = new ObjectMapper()
+    mapper.setVisibility(JsonMethod.ALL, Visibility.NONE)
+    mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY)
+    mapper.setSerializationInclusion(Inclusion.NON_NULL)
+    mapper.valueToTree(schema)
+  }
 
   def generateSchema(clazz: Class[_]*): JsonSchema = {
     def _makeSchema(clazz: Class[_], ctx: JsonSchemaContext): JsonObject = {
