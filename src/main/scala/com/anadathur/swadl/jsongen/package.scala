@@ -152,8 +152,8 @@ package object jsongen {
 
   private[this] val transientClasses: Set[Class[_]] = Set(classOf[XmlTransient], classOf[JsonIgnore])
 
-  def isAnyGetterElement(element: AnnotatedElement) =
-    element.getAnnotations.exists(isAnyGetter)
+  def isAnyGetterElement(element: AnnotatedElement) = 
+    element != null && element.getAnnotations.exists(isAnyGetter)
 
   def isAnyGetter(ann: java.lang.annotation.Annotation) =
     additionalPropsAnn.contains(ann.annotationType)
